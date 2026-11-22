@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oh, engineer...</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #ffffff;
+      background-color: #050505;
+      background-position: center center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      display: flex;
+      justify-content: center;
+      padding: 56px 20px 64px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 104px;
+      height: 104px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 22px;
+      display: block;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #ffffff;
+      margin-bottom: 34px;
+      letter-spacing: 0.3px;
+    }
+
+    .links {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .link-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 62px;
+      padding: 16px 24px;
+      border-radius: 2px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.12s ease, filter 0.15s ease;
+    }
+
+    .link-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    .link-btn:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img id="avatar" class="avatar" src="" alt="oh, engineer..." />
+    <h1 id="title"></h1>
+    <p id="subtitle" class="subtitle"></p>
+    <div id="links" class="links"></div>
+  </div>
+
+  <script>
+    // ================= НАСТРОЙКИ СТРАНИЦЫ =================
+    const PAGE = {
+      title: "oh, engineer...",
+      subtitle: "Main",
+      avatar: "Main. Profile pic. Main_00000.jpg",
+      background: "Main. Background_00000.jpg",
+      links: [
+        {
+          text: "Instagram",
+          url: "https://www.instagram.com/oh_engineer___/",
+          bg: "#EA01C4",
+          color: "#FFFFFF"
+        },
+        {
+          text: "YouTube",
+          url: "https://www.youtube.com/channel/UC6qUJweRGczVE86tG-wyUyw",
+          bg: "#FF0000",
+          color: "#FFFFFF"
+        },
+        {
+          text: "ResearchGate",
+          url: "https://www.researchgate.net/profile/Dmytro-Spivak",
+          bg: "#04D4AC",
+          color: "#FFFFFF"
+        },
+        {
+          text: "Scopus",
+          url: "https://www.scopus.com/authid/detail.uri?authorId=57687150600",
+          bg: "#F77E00",
+          color: "#FFFFFF"
+        },
+        {
+          text: "ORCID",
+          url: "https://orcid.org/0000-0002-8155-7497",
+          bg: "#A1C837",
+          color: "#FFFFFF"
+        },
+        {
+          text: "Google Scholar",
+          url: "https://scholar.google.com.ua/citations?user=RLKYLj0AAAAJ&hl",
+          bg: "#4285F4",
+          color: "#FFFFFF"
+        }
+      ]
+    };
+    // ======================================================
+
+    document.title = PAGE.title;
+    document.getElementById("title").textContent = PAGE.title;
+    document.getElementById("subtitle").textContent = PAGE.subtitle;
+
+    if (PAGE.background) {
+      document.body.style.backgroundImage = `url("${encodeURI(PAGE.background)}")`;
+    }
+
+    const avatarEl = document.getElementById("avatar");
+    if (PAGE.avatar) {
+      avatarEl.src = encodeURI(PAGE.avatar);
+      avatarEl.onerror = () => { avatarEl.style.display = "none"; };
+    } else {
+      avatarEl.style.display = "none";
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+      }
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      return Promise.resolve();
+    }
+
+    const linksContainer = document.getElementById("links");
+    PAGE.links.forEach(item => {
+      const a = document.createElement("a");
+      a.className = "link-btn";
+      a.textContent = item.text;
+      a.style.backgroundColor = item.bg || "#666666";
+      a.style.color = item.color || "#FFFFFF";
+
+      if (item.copy) {
+        a.href = "#";
+        let timer;
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          copyToClipboard(item.copy).then(() => {
+            a.textContent = item.copiedText || "Copied!";
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+              a.textContent = item.text;
+            }, 2000);
+          });
+        });
+      } else {
+        a.href = item.url || "#";
+        if (item.url && item.url !== "#" && !item.sameTab) {
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+        }
+      }
+
+      linksContainer.appendChild(a);
+    });
+  </script>
+</body>
+</html>
